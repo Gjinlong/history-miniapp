@@ -1,0 +1,20 @@
+/* 全局SCSS变量 - 历史答题闯关 */
+$primary-color: #62B6CB;       /* 主色 浅青 */
+$bg-color: #FAF8F0;            /* 辅助背景 米色 */
+$text-dark: #333333;           /* 文字深灰 */
+$text-light: #666666;          /* 文字浅灰 */
+$white: #FFFFFF;
+$card-shadow: 0 4rpx 20rpx rgba(0,0,0,0.06);
+$card-radius: 16rpx;
+$btn-radius: 50rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 24rpx;
+$spacing-lg: 32rpx;
+
+page {
+  background-color: $bg-color;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: $text-dark;
+  font-size: 28rpx;
+  line-height: 1.6;
+}

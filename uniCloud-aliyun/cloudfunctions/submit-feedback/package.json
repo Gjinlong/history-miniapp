@@ -1,0 +1,7 @@
+{
+  "name": "函数名",
+  "version": "1.0.0",
+  "description": "历史答题闯关云函数",
+  "main": "index.js",
+  "dependencies": {}
+}

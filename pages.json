@@ -1,0 +1,126 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "历史答题闯关",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/rank/rank",
+      "style": {
+        "navigationBarTitleText": "排行榜",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/battle-rank/rank",
+      "style": {
+        "navigationBarTitleText": "对战排行榜",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/answer/answer",
+      "style": {
+        "navigationBarTitleText": "答题闯关",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/error-list/error-list",
+      "style": {
+        "navigationBarTitleText": "我的错题本",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/battle-match/battle-match",
+      "style": {
+        "navigationBarTitleText": "对战",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/battle-room/battle-room",
+      "style": {
+        "navigationBarTitleText": "对战",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/battle-result/battle-result",
+      "style": {
+        "navigationBarTitleText": "对战结果",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#FAF8F0"
+      }
+    },
+    {
+      "path": "pages/feedback/feedback",
+      "style": {
+        "navigationBarTitleText": "意见反馈",
+        "navigationBarBackgroundColor": "#62B6CB",
+        "navigationBarTextStyle": "white"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "历史答题闯关",
+    "navigationBarBackgroundColor": "#62B6CB",
+    "backgroundColor": "#FAF8F0",
+	"onReachBottomDistance":50
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#62B6CB",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+		"iconPath": "/static/imgs/home_1.png",
+		"selectedIconPath": "/static/imgs/home.png"
+      },
+      {
+        "pagePath": "pages/battle-rank/rank",
+        "text": "对战排行榜",
+		"iconPath": "/static/imgs/paihang_1.png",
+		"selectedIconPath": "/static/imgs/paihang.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+		"iconPath": "/static/imgs/my_1.png",
+		"selectedIconPath": "/static/imgs/my.png"
+      }
+    ]
+  }
+}
