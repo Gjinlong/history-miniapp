@@ -45,12 +45,13 @@
         <text class="menu-text">刷新数据</text>
         <text class="menu-arrow">›</text>
       </view>
-	  <view class="menu-item card" @click="remark">
+	  <view class="menu-item card">
 	    <view class="menu-icon">
 			<image src="/static/imgs/remark.png" mode=""></image>
 		</view>
 	    <text class="menu-text">意见反馈</text>
 	    <text class="menu-arrow">›</text>
+		<button class="con-btn" open-type="contact"></button>
 	  </view>
     </view>
   </view>
@@ -198,7 +199,7 @@ function goErrorList() {
     align-items: center;
     padding: 24rpx 20rpx;
     margin-bottom: 12rpx;
-    
+    position: relative;
     .menu-icon {
       font-size: 36rpx;
       margin-right: 16rpx;
@@ -208,7 +209,14 @@ function goErrorList() {
 		  height: 50rpx;
 	  }
     }
-    
+    .con-btn{
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		opacity: 0;
+	}
     .menu-text {
       flex: 1;
       font-size: 28rpx;
