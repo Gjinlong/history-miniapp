@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>历史答题 · 管理后台</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f5f5; color: #333; font-size: 15px; padding-bottom: 60px;
+  }
+  .header {
+    background: #62B6CB; color: #fff; padding: 16px;
+    text-align: center; font-size: 18px; font-weight: bold;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .container { padding: 12px; }
+  .card {
+    background: #fff; border-radius: 10px; padding: 14px;
+    margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .tabs { display: flex; background: #fff; margin-bottom: 12px; border-radius: 10px; overflow: hidden; }
+  .tab {
+    flex: 1; text-align: center; padding: 12px; cursor: pointer;
+    color: #666; font-size: 15px;
+  }
+  .tab.active { background: #62B6CB; color: #fff; font-weight: bold; }
+
+  .btn {
+    display: inline-block; padding: 8px 14px; border-radius: 6px;
+    border: none; font-size: 14px; cursor: pointer;
+    background: #62B6CB; color: #fff;
+  }
+  .btn-sm { padding: 6px 10px; font-size: 13px; }
+  .btn-danger { background: #e74c3c; }
+  .btn-gray { background: #95a5a6; }
+  .btn-block { display: block; width: 100%; padding: 12px; font-size: 16px; margin-top: 8px; }
+
+  .input, .textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd;
+    border-radius: 6px; font-size: 15px; margin-bottom: 10px;
+    font-family: inherit; background: #fafafa;
+  }
+  .textarea { min-height: 80px; resize: vertical; }
+
+  .q-item {
+    background: #fff; border-radius: 10px; padding: 12px;
+    margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .q-title { font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+  .q-options { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 8px; }
+  .q-answer { color: #4CAF50; font-weight: bold; font-size: 13px; }
+  .q-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+  .u-item {
+    background: #fff; border-radius: 10px; padding: 12px;
+    margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .u-info { flex: 1; }
+  .u-name { font-weight: 600; }
+  .u-stats { font-size: 13px; color: #999; margin-top: 2px; }
+
+  .empty { text-align: center; color: #999; padding: 40px 0; }
+
+  .modal-mask {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,.5); display: none; z-index: 100;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-mask.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 12px; padding: 18px;
+    width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto;
+  }
+  .modal h3 { margin-bottom: 14px; font-size: 17px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 12px; }
+  .modal-actions .btn { flex: 1; padding: 10px; }
+
+  .login-box {
+    max-width: 340px; margin: 100px auto; padding: 24px;
+    background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  .login-box h2 { text-align: center; color: #62B6CB; margin-bottom: 20px; }
+  .loading { text-align: center; color: #62B6CB; padding: 20px; }
+</style>
+</head>
+<body>
+
+<!-- 登录页 -->
+<div id="loginPage">
+  <div class="login-box">
+    <h2>🔐 管理后台</h2>
+    <input id="pwdInput" class="input" type="password" placeholder="请输入管理密码">
+    <button class="btn btn-block" onclick="doLogin()">登录</button>
+  </div>
+</div>
+
+<!-- 主界面 -->
+<div id="mainPage" style="display:none">
+  <div class="header">历史答题 · 管理后台</div>
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" data-tab="question" onclick="switchTab('question')">📜 题库</div>
+      <div class="tab" data-tab="users" onclick="switchTab('users')">👥 用户</div>
+    </div>
+
+    <!-- 题库面板 -->
+    <div id="panel-question">
+      <button class="btn btn-block" onclick="openAddQuestion()">➕ 新增题目</button>
+      <div id="questionList" class="loading">加载中...</div>
+    </div>
+
+    <!-- 用户面板 -->
+    <div id="panel-users" style="display:none">
+      <div id="userList" class="loading">加载中...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑题目弹窗 -->
+<div id="editModal" class="modal-mask">
+  <div class="modal">
+    <h3 id="editTitle">新增题目</h3>
+    <input id="qTitle" class="input" placeholder="题干">
+    <input id="qA" class="input" placeholder="A选项">
+    <input id="qB" class="input" placeholder="B选项">
+    <input id="qC" class="input" placeholder="C选项">
+    <input id="qD" class="input" placeholder="D选项">
+    <select id="qAnswer" class="input">
+      <option value="A">正确答案：A</option>
+      <option value="B">正确答案：B</option>
+      <option value="C">正确答案：C</option>
+      <option value="D">正确答案：D</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn btn-gray" onclick="closeEditModal()">取消</button>
+      <button class="btn" onclick="saveQuestion()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 🔧 只需修改这一行：换成你的云函数地址
+// ============================================================
+const API_URL = 'https://fc-mp-696f9edd-882f-436a-8d37-0fac0d42a08e.next.bspapp.com/admin-db';
+// ============================================================
+
+let password = '';
+let currentTab = 'question';
+let currentEditId = null;
+
+// 通用请求
+async function callApi(payload) {
+	console.log("参数",payload);
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, password })
+  });
+  return await res.json();
+}
+
+// 登录
+function doLogin() {
+  const pwd = document.getElementById('pwdInput').value.trim();
+  if (!pwd) return alert('请输入密码');
+  password = pwd;
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+  loadTab('question');
+}
+
+// 切换 Tab
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  document.getElementById('panel-question').style.display = tab === 'question' ? 'block' : 'none';
+  document.getElementById('panel-users').style.display = tab === 'users' ? 'block' : 'none';
+  loadTab(tab);
+}
+
+function loadTab(tab) {
+  if (tab === 'question') loadQuestions();
+  else loadUsers();
+}
+
+// ========== 题库 ==========
+async function loadQuestions() {
+  const box = document.getElementById('questionList');
+  box.innerHTML = '<div class="loading">加载中...</div>';
+  const res = await callApi({ action: 'list', collection: 'question', limit: 200 });
+  if (res.code !== 0) { box.innerHTML = `<div class="empty">❌ ${res.msg}</div>`; return; }
+  if (!res.data || !res.data.length) { box.innerHTML = '<div class="empty">暂无题目</div>'; return; }
+
+  box.innerHTML = res.data.map(q => `
+    <div class="q-item">
+      <div class="q-title">${escapeHtml(q.title)}</div>
+      <div class="q-options">
+        A. ${escapeHtml(q.options[0] || '')}<br>
+        B. ${escapeHtml(q.options[1] || '')}<br>
+        C. ${escapeHtml(q.options[2] || '')}<br>
+        D. ${escapeHtml(q.options[3] || '')}
+      </div>
+      <div class="q-answer">✅ 正确答案：${q.rightAnswer}</div>
+      <div class="q-actions">
+        <button class="btn btn-sm" onclick='openEditQuestion(${JSON.stringify(q)})'>编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteQuestion('${q._id}')">删除</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openAddQuestion() {
+  currentEditId = null;
+  document.getElementById('editTitle').textContent = '新增题目';
+  document.getElementById('qTitle').value = '';
+  document.getElementById('qA').value = '';
+  document.getElementById('qB').value = '';
+  document.getElementById('qC').value = '';
+  document.getElementById('qD').value = '';
+  document.getElementById('qAnswer').value = 'A';
+  document.getElementById('editModal').classList.add('show');
+}
+
+function openEditQuestion(q) {
+  currentEditId = q._id;
+  document.getElementById('editTitle').textContent = '编辑题目';
+  document.getElementById('qTitle').value = q.title;
+  document.getElementById('qA').value = q.options[0] || '';
+  document.getElementById('qB').value = q.options[1] || '';
+  document.getElementById('qC').value = q.options[2] || '';
+  document.getElementById('qD').value = q.options[3] || '';
+  document.getElementById('qAnswer').value = q.rightAnswer;
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+}
+
+async function saveQuestion() {
+  const title = document.getElementById('qTitle').value.trim();
+  const A = document.getElementById('qA').value.trim();
+  const B = document.getElementById('qB').value.trim();
+  const C = document.getElementById('qC').value.trim();
+  const D = document.getElementById('qD').value.trim();
+  const rightAnswer = document.getElementById('qAnswer').value;
+
+  if (!title || !A || !B || !C || !D) return alert('请填写完整');
+
+  const data = { title, options: [A, B, C, D], rightAnswer };
+
+  let res;
+  if (currentEditId) {
+    res = await callApi({ action: 'update', collection: 'question', id: currentEditId, data });
+  } else {
+    res = await callApi({ action: 'add', collection: 'question', data });
+  }
+  if (res.code === 0) {
+    closeEditModal();
+    loadQuestions();
+  } else {
+    alert('保存失败：' + res.msg);
+  }
+}
+
+async function deleteQuestion(id) {
+  if (!confirm('确定删除这道题？')) return;
+  const res = await callApi({ action: 'remove', collection: 'question', id });
+  if (res.code === 0) loadQuestions();
+  else alert('删除失败：' + res.msg);
+}
+
+// ========== 用户 ==========
+async function loadUsers() {
+  const box = document.getElementById('userList');
+  box.innerHTML = '<div class="loading">加载中...</div>';
+  const res = await callApi({ action: 'list', collection: 'users', limit: 200 });
+  if (res.code !== 0) { box.innerHTML = `<div class="empty">❌ ${res.msg}</div>`; return; }
+  if (!res.data || !res.data.length) { box.innerHTML = '<div class="empty">暂无用户</div>'; return; }
+
+  box.innerHTML = res.data.map(u => `
+    <div class="u-item">
+      <div class="u-info">
+        <div class="u-name">${escapeHtml(u.nickName || '未命名')}</div>
+        <div class="u-stats">
+          答题：${u.totalAnswer || 0} | 正确率：${((u.accuracy || 0) * 100).toFixed(1)}% | 称号：${u.title || '-'}
+        </div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="deleteUser('${u._id}')">删除</button>
+    </div>
+  `).join('');
+}
+
+async function deleteUser(id) {
+  if (!confirm('确定删除该用户？此操作不可恢复！')) return;
+  const res = await callApi({ action: 'remove', collection: 'users', id });
+  if (res.code === 0) loadUsers();
+  else alert('删除失败：' + res.msg);
+}
+
+// 工具：防XSS
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+</script>
+
+</body>
+</html>
