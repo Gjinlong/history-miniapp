@@ -1,0 +1,9 @@
+{
+  "name": "download-bank",
+  "version": "1.0.0",
+  "description": "聚合题库并导出 Excel",
+  "main": "index.js",
+  "dependencies": {
+    "node-xlsx": "^0.21.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "virtual-pay-reconcile",
+  "version": "1.0.0",
+  "description": "虚拟支付对账恢复：找回已支付但未标记的订单",
+  "main": "index.js",
+  "dependencies": {
+    "pay-config": "file:../common/pay-config"
+  }
+}

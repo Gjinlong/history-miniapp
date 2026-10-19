@@ -1,0 +1,7 @@
+{
+  "name": "virtual-pay-query",
+  "version": "1.0.0",
+  "description": "查询虚拟支付下载权限",
+  "main": "index.js",
+  "dependencies": {}
+}

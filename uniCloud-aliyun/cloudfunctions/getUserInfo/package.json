@@ -1,7 +1,9 @@
 {
-  "name": "函数名",
+  "name": "getUserInfo",
   "version": "1.0.0",
-  "description": "历史答题闯关云函数",
+  "description": "获取用户信息（登录注册）",
   "main": "index.js",
-  "dependencies": {}
+  "dependencies": {
+    "pay-config": "file:../common/pay-config"
+  }
 }

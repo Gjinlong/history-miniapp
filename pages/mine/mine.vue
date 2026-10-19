@@ -45,6 +45,11 @@
         <text class="menu-text">刷新数据</text>
         <text class="menu-arrow">›</text>
       </view>
+      <view class="menu-item card" @click="onDownloadTap">
+        <text class="menu-icon">📥</text>
+        <text class="menu-text">{{ paidBank ? '下载题库' : '下载题库（￥3.9）' }}</text>
+        <text class="menu-arrow">›</text>
+      </view>
 	  <view class="menu-item card">
 	    <view class="menu-icon">
 			<image src="/static/imgs/remark.png" mode=""></image>
@@ -63,6 +68,7 @@
  */
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import { checkEntitlement, pay, download, reconcile } from '@/utils/virtualPay'
 
 const userInfo = ref({
   _id: '',
@@ -85,8 +91,18 @@ const errorCount = computed(() => {
   return userInfo.value.errorList ? userInfo.value.errorList.length : 0
 })
 
+// 虚拟支付 / 下载权限状态
+const paidBank = ref(false)
+function currentUid() { return uni.getStorageSync('user_id') }
+
+async function refreshPayState() {
+  const uid = currentUid()
+  if (uid) paidBank.value = await checkEntitlement(uid)
+}
+
 onShow(() => {
   loadUserInfo()
+  refreshPayState()
 })
 
 function loadUserInfo() {
@@ -120,6 +136,31 @@ async function refreshData() {
 
 function goErrorList() {
   uni.navigateTo({ url: '/pages/error-list/error-list' })
+}
+
+// 下载题库入口：已购直接下载，未购先对账恢复（找回已付未标记订单），再不行才支付
+async function onDownloadTap() {
+  const uid = currentUid()
+  if (!uid) {
+    uni.showToast({ title: '请先登录', icon: 'none' })
+    return
+  }
+  if (paidBank.value) {
+    await download(uid)
+    return
+  }
+  // 先对账：可能上一笔已付款但云端没标记，找回即可，不会重复扣款
+  uni.showLoading({ title: '校验订单...', mask: true })
+  const recovered = await reconcile(uid)
+  uni.hideLoading()
+  if (recovered) {
+    paidBank.value = true
+    await download(uid)
+    return
+  }
+  // 确实没有已付订单 → 发起支付
+  const r = await pay(uid)
+  if (r.success) paidBank.value = true
 }
 </script>
 

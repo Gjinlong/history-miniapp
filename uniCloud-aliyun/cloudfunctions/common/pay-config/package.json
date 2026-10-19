@@ -1,0 +1,6 @@
+{
+  "name": "pay-config",
+  "version": "1.0.0",
+  "description": "虚拟支付公共配置与工具（OfferID/AppKey/签名/xpay接口封装）",
+  "main": "index.js"
+}

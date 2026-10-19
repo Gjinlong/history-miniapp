@@ -47,6 +47,10 @@
         <text class="icon">📋</text>
         <text>错题本</text>
       </view>
+      <view class="quick-item card" @click="onDownloadTap">
+        <text class="icon">📥</text>
+        <text>下载题库{{paidBank ? '' : '（￥3）'}}</text>
+      </view>
     </view>
 
     <!-- 修改用户信息弹窗 -->
@@ -88,6 +92,7 @@
  */
 import { ref, computed } from 'vue'
 import { onLoad,onShow,onShareAppMessage,onShareTimeline } from '@dcloudio/uni-app'
+import { checkEntitlement, pay, download, reconcile } from '@/utils/virtualPay'
 
 // 用户信息响应式数据
 const userInfo = ref({
@@ -113,6 +118,15 @@ const showEditModal = ref(false)
 const submitting = ref(false)
 const editForm = ref({ nickName: '', avatar: '' })
 
+// 虚拟支付 / 下载权限状态
+const paidBank = ref(false)
+function currentUid() { return uni.getStorageSync('user_id') }
+
+async function refreshPayState() {
+  const uid = currentUid()
+  if (uid) paidBank.value = await checkEntitlement(uid)
+}
+
 // 计算显示正确率
 const displayAccuracy = computed(() => {
   const acc = userInfo.value.accuracy
@@ -135,6 +149,7 @@ onLoad(({roomid}) => {
 // 每次显示时刷新
 onShow(() => {
   loadUserInfo()
+  refreshPayState()
 })
 
 onShareAppMessage((res) => {
@@ -274,6 +289,31 @@ function goRank() {
 // 跳转错题本
 function goErrorList() {
   uni.navigateTo({ url: '/pages/error-list/error-list' })
+}
+
+// 下载题库入口：已购直接下载，未购先对账恢复（找回已付未标记订单），再不行才支付
+async function onDownloadTap() {
+  const uid = currentUid()
+  if (!uid) {
+    uni.showToast({ title: '请先登录', icon: 'none' })
+    return
+  }
+  if (paidBank.value) {
+    await download(uid)
+    return
+  }
+  // 先对账：可能上一笔已付款但云端没标记，找回即可，不会重复扣款
+  uni.showLoading({ title: '校验订单...', mask: true })
+  const recovered = await reconcile(uid)
+  uni.hideLoading()
+  if (recovered) {
+    paidBank.value = true
+    await download(uid)
+    return
+  }
+  // 确实没有已付订单 → 发起支付
+  const r = await pay(uid)
+  if (r.success) paidBank.value = true
 }
 
 // 打开编辑弹窗时预填数据
@@ -549,13 +589,14 @@ import { watch } from 'vue'
 .quick-links {
   display: flex;
   padding: 0 24rpx;
-  gap: 20rpx;
+  gap: 12rpx;
   position: absolute;
   left: 0;
   right: 0;
   bottom: 50rpx;
   .quick-item {
     flex: 1;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -563,13 +604,16 @@ import { watch } from 'vue'
     padding: 30rpx 0;
     font-size: 26rpx;
     color: $text-dark;
-    
+    margin: 0;
     .icon {
       font-size: 48rpx;
       margin-bottom: 8rpx;
     }
   }
+
 }
+
+
 
 /* 弹窗样式 */
 .modal-mask {

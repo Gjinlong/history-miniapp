@@ -1,0 +1,9 @@
+{
+  "name": "virtual-pay-confirm",
+  "version": "1.0.0",
+  "description": "虚拟支付确认发货与开通权限",
+  "main": "index.js",
+  "dependencies": {
+    "pay-config": "file:../common/pay-config"
+  }
+}

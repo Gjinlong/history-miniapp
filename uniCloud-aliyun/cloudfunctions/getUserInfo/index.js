@@ -6,9 +6,7 @@
  */
 const db = uniCloud.database()
 const usersCollection = db.collection('users')
-
-const APPID = "wx6c4806f018ac582c"
-const APPSECRET = "c3c491ce029cbf5edb8702a4b77b52a5"
+const payConfig = require('pay-config')
 
 exports.main = async (event, context) => {
   try {
@@ -39,7 +37,7 @@ async function getuserInfoById(id){
 
 async function getuserInfoByCode(code){
 	// 1、用code换取openid
-	const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${APPID}&secret=${APPSECRET}&js_code=${code}&grant_type=authorization_code`
+	const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${payConfig.CONFIG.APPID}&secret=${payConfig.CONFIG.APPSECRET}&js_code=${code}&grant_type=authorization_code`
 	const sessionRes = await uniCloud.httpclient.request(url, {
 	  dataType: "json"
 	})

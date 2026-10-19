@@ -1,0 +1,9 @@
+{
+  "name": "virtual-pay-order",
+  "version": "1.0.0",
+  "description": "虚拟支付下单与双签名",
+  "main": "index.js",
+  "dependencies": {
+    "pay-config": "file:../common/pay-config"
+  }
+}
